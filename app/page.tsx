@@ -1181,8 +1181,8 @@ function Footer() {
               ))}
             </div>
             <div className="mt-4">
-              <a href="mailto:hello@cryptokolhub.com" className="text-indigo-400 hover:text-indigo-300 text-sm transition-colors">
-                hello@cryptokolhub.com
+              <a href="mailto:cryptokolhubturkiye@gmail.com" className="text-indigo-400 hover:text-indigo-300 text-sm transition-colors">
+                cryptokolhubturkiye@gmail.com
               </a>
             </div>
           </div>

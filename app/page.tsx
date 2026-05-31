@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -15,11 +15,6 @@ const fadeUp = {
   visible: (delay = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] } }),
 };
 
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: (delay = 0) => ({ opacity: 1, transition: { duration: 0.6, delay } }),
-};
-
 const staggerContainer = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12 } },
@@ -29,6 +24,23 @@ function useScrollInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
   return { ref, isInView };
+}
+
+// ─── Social Icons ─────────────────────────────────────────────────────────────
+function XIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+function TelegramIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+    </svg>
+  );
 }
 
 // ─── Network Canvas (Hero Background) ────────────────────────────────────────
@@ -75,19 +87,13 @@ function NetworkCanvas() {
         n.x += n.vx; n.y += n.vy;
         if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
         if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
-        // Mouse repulsion
         const dx = n.x - mx, dy = n.y - my;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 100) {
-          n.vx += (dx / dist) * 0.08;
-          n.vy += (dy / dist) * 0.08;
-        }
-        // Speed limit
+        if (dist < 100) { n.vx += (dx / dist) * 0.08; n.vy += (dy / dist) * 0.08; }
         const speed = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
         if (speed > 1.2) { n.vx = (n.vx / speed) * 1.2; n.vy = (n.vy / speed) * 1.2; }
       });
 
-      // Connections
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
@@ -108,7 +114,6 @@ function NetworkCanvas() {
         }
       }
 
-      // Nodes
       nodes.forEach(n => {
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
@@ -124,9 +129,7 @@ function NetworkCanvas() {
       animRef.current = requestAnimationFrame(draw);
     };
 
-    const onMouse = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-    };
+    const onMouse = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY }; };
 
     resize();
     draw();
@@ -143,7 +146,7 @@ function NetworkCanvas() {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
 }
 
-// ─── Section wrapper with scroll animation ────────────────────────────────────
+// ─── Section wrapper ──────────────────────────────────────────────────────────
 function Section({ id, children, className = "" }: { id?: string; children: React.ReactNode; className?: string }) {
   return (
     <section id={id} className={`relative py-24 px-6 ${className}`}>
@@ -177,7 +180,7 @@ function Navbar() {
     { label: "Community", href: "#building" },
     { label: "Events", href: "#events" },
     { label: "Creators", href: "#creators" },
-    { label: "Transparency", href: "#transparency" },
+    { label: "Team", href: "#team" },
     { label: "Join", href: "#join" },
   ];
 
@@ -187,17 +190,13 @@ function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-[#030712]/90 backdrop-blur-xl border-b border-white/[0.06]"
-          : "bg-transparent"
+        scrolled ? "bg-[#030712]/90 backdrop-blur-xl border-b border-white/[0.06]" : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
         {/* Logo */}
         <a href="#home" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center">
-            <span className="text-white font-black text-sm">K</span>
-          </div>
+          <img src="/logo.png" alt="Crypto KOL Hub" className="w-9 h-9 object-contain" style={{ mixBlendMode: "screen" }} />
           <span className="font-bold text-white text-[15px] tracking-tight">
             Crypto <span className="gradient-text-green">KOL Hub</span>
           </span>
@@ -216,8 +215,27 @@ function Navbar() {
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="hidden lg:block">
+        {/* Desktop: social icons + CTA */}
+        <div className="hidden lg:flex items-center gap-2">
+          <a
+            href="https://x.com/cryptokolhub"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Follow on X"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
+            <XIcon size={15} />
+          </a>
+          <a
+            href="https://t.me/cryptokolhubtr"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Join Telegram"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
+            <TelegramIcon size={15} />
+          </a>
+          <div className="w-px h-5 bg-white/10 mx-1" />
           <a href="#join">
             <button className="btn-primary text-[13px]">Join the Network</button>
           </a>
@@ -241,7 +259,7 @@ function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-[#030712]/95 backdrop-blur-xl border-b border-white/[0.06] px-6 pb-4"
+            className="lg:hidden bg-[#030712]/95 backdrop-blur-xl border-b border-white/[0.06] px-6 pb-5"
           >
             {links.map(l => (
               <a
@@ -253,8 +271,27 @@ function Navbar() {
                 {l.label}
               </a>
             ))}
+            <div className="flex items-center gap-3 mt-4">
+              <a
+                href="https://x.com/cryptokolhub"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors"
+              >
+                <XIcon size={14} /> @cryptokolhub
+              </a>
+              <span className="text-white/20">·</span>
+              <a
+                href="https://t.me/cryptokolhubtr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors"
+              >
+                <TelegramIcon size={14} /> @cryptokolhubtr
+              </a>
+            </div>
             <a href="#join" onClick={() => setMenuOpen(false)}>
-              <button className="btn-primary w-full text-sm mt-3">Join the Network</button>
+              <button className="btn-primary w-full text-sm mt-4">Join the Network</button>
             </a>
           </motion.div>
         )}
@@ -267,15 +304,11 @@ function Navbar() {
 function HeroSection() {
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Canvas background */}
       <NetworkCanvas />
-
-      {/* Gradient overlays */}
       <div className="absolute inset-0 bg-gradient-radial from-indigo-950/30 via-transparent to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#030712]" />
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent" />
 
-      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24 w-full">
         <div className="max-w-4xl mx-auto text-center">
 
@@ -283,7 +316,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex justify-center mb-8"
+            className="flex justify-center mb-4"
           >
             <span className="badge">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
@@ -291,10 +324,22 @@ function HeroSection() {
             </span>
           </motion.div>
 
+          {/* Turkey tagline */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex justify-center mb-8"
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm text-white/50 bg-white/[0.03] border border-white/[0.07] font-medium tracking-wide">
+              🇹🇷 Rooted in Türkiye. Connected to Global Web3.
+            </span>
+          </motion.div>
+
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-6"
           >
             Connecting{" "}
@@ -309,7 +354,7 @@ function HeroSection() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.25 }}
+            transition={{ duration: 0.7, delay: 0.28 }}
             className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-10"
           >
             Crypto KOL Hub is an independent Web3 community initiative bringing together
@@ -320,29 +365,42 @@ function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            transition={{ duration: 0.6, delay: 0.42 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-8"
           >
             <a href="#join">
-              <button className="btn-primary px-8 py-4 text-[15px]">
-                Join the Network
-              </button>
+              <button className="btn-primary px-8 py-4 text-[15px]">Join the Network</button>
             </a>
             <a href="#about">
-              <button className="btn-outline px-8 py-4 text-[15px]">
-                Explore the Vision
-              </button>
+              <button className="btn-outline px-8 py-4 text-[15px]">Explore the Vision</button>
             </a>
           </motion.div>
 
-          <motion.p
+          {/* Social links in hero */}
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-white/30 text-sm"
+            className="flex items-center justify-center gap-5"
           >
-            Built for real creators, real communities and transparent Web3 connections.
-          </motion.p>
+            <a
+              href="https://x.com/cryptokolhub"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white/30 hover:text-white/70 text-sm transition-colors duration-200"
+            >
+              <XIcon size={14} /> @cryptokolhub
+            </a>
+            <span className="text-white/15">·</span>
+            <a
+              href="https://t.me/cryptokolhubtr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white/30 hover:text-white/70 text-sm transition-colors duration-200"
+            >
+              <TelegramIcon size={14} /> @cryptokolhubtr
+            </a>
+          </motion.div>
         </div>
 
         {/* Scroll indicator */}
@@ -380,46 +438,25 @@ function AboutSection() {
         <div className="section-divider mb-24" />
 
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
+          <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"}>
             <motion.div variants={fadeUp} custom={0}>
               <SectionBadge text="About the Initiative" />
             </motion.div>
-            <motion.h2
-              variants={fadeUp}
-              custom={0.1}
-              className="text-4xl lg:text-5xl font-black tracking-tight mb-6 text-center lg:text-left"
-            >
-              A{" "}
-              <span className="gradient-text-green">Community-First</span>
-              <br />
-              Web3 Network
+            <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-6 text-center lg:text-left">
+              A{" "}<span className="gradient-text-green">Community-First</span><br />Web3 Network
             </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              custom={0.2}
-              className="text-white/60 text-lg leading-relaxed mb-6 text-center lg:text-left"
-            >
+            <motion.p variants={fadeUp} custom={0.2} className="text-white/60 text-lg leading-relaxed mb-6 text-center lg:text-left">
               Crypto KOL Hub is being built as a transparent space for Web3 creators,
               KOLs, event communities and ecosystem builders. Our mission is to create
               a trusted network where real people, real communities and global Web3
               events can discover each other more easily.
             </motion.p>
-            <motion.p
-              variants={fadeUp}
-              custom={0.3}
-              className="text-white/40 text-base leading-relaxed text-center lg:text-left"
-            >
+            <motion.p variants={fadeUp} custom={0.3} className="text-white/40 text-base leading-relaxed text-center lg:text-left">
               We are focused on community, transparency and long-term ecosystem
               building — not on commercial services, paid promotions or financial gains.
             </motion.p>
           </motion.div>
 
-          {/* Right: Stats + visual */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -471,96 +508,37 @@ function WhatWeBuilding() {
   const { ref, isInView } = useScrollInView();
 
   const cards = [
-    {
-      icon: "🌐",
-      title: "Creator Network",
-      desc: "A growing network of real Web3 creators, KOLs and community voices from across the global ecosystem.",
-      color: "from-indigo-600/20 to-purple-600/20",
-      border: "border-indigo-500/20",
-    },
-    {
-      icon: "📅",
-      title: "Event Discovery",
-      desc: "Following and highlighting relevant global Web3 and crypto events to keep communities informed and connected.",
-      color: "from-cyan-600/20 to-blue-600/20",
-      border: "border-cyan-500/20",
-    },
-    {
-      icon: "🔗",
-      title: "Community Bridge",
-      desc: "Connecting global Web3 ecosystems with regional community leaders and local market voices.",
-      color: "from-green-600/20 to-emerald-600/20",
-      border: "border-green-500/20",
-    },
-    {
-      icon: "🔍",
-      title: "Transparent Participation",
-      desc: "A clear, honest and community-first approach to creator involvement with no hidden agendas.",
-      color: "from-amber-600/20 to-orange-600/20",
-      border: "border-amber-500/20",
-    },
-    {
-      icon: "🗺️",
-      title: "Local Market Insight",
-      desc: "Understanding regional creator communities and market culture to build stronger global connections.",
-      color: "from-pink-600/20 to-rose-600/20",
-      border: "border-pink-500/20",
-    },
-    {
-      icon: "🚀",
-      title: "Future Community Events",
-      desc: "Building the foundation for future community-led Web3 gatherings and ecosystem events.",
-      color: "from-violet-600/20 to-purple-600/20",
-      border: "border-violet-500/20",
-    },
+    { icon: "🌐", title: "Creator Network", desc: "A growing network of real Web3 creators, KOLs and community voices from across the global ecosystem.", color: "from-indigo-600/20 to-purple-600/20", border: "border-indigo-500/20" },
+    { icon: "📅", title: "Event Discovery", desc: "Following and highlighting relevant global Web3 and crypto events to keep communities informed and connected.", color: "from-cyan-600/20 to-blue-600/20", border: "border-cyan-500/20" },
+    { icon: "🔗", title: "Community Bridge", desc: "Connecting global Web3 ecosystems with regional community leaders and local market voices.", color: "from-green-600/20 to-emerald-600/20", border: "border-green-500/20" },
+    { icon: "🔍", title: "Transparent Participation", desc: "A clear, honest and community-first approach to creator involvement with no hidden agendas.", color: "from-amber-600/20 to-orange-600/20", border: "border-amber-500/20" },
+    { icon: "🗺️", title: "Local Market Insight", desc: "Understanding regional creator communities and market culture to build stronger global connections.", color: "from-pink-600/20 to-rose-600/20", border: "border-pink-500/20" },
+    { icon: "🚀", title: "Future Community Events", desc: "Building the foundation for future community-led Web3 gatherings and ecosystem events.", color: "from-violet-600/20 to-purple-600/20", border: "border-violet-500/20" },
   ];
 
   return (
     <Section id="building" className="bg-[#050c1a]">
       <div className="max-w-6xl mx-auto" ref={ref}>
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="text-center mb-16"
-        >
-          <motion.div variants={fadeUp} custom={0}>
-            <SectionBadge text="What We're Building" />
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={0.1}
-            className="text-4xl lg:text-5xl font-black tracking-tight mb-4"
-          >
-            A Transparent{" "}
-            <span className="gradient-text-purple">Web3 Ecosystem</span>
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
+          <motion.div variants={fadeUp} custom={0}><SectionBadge text="What We're Building" /></motion.div>
+          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+            A Transparent{" "}<span className="gradient-text-purple">Web3 Ecosystem</span>
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={0.2}
-            className="text-white/50 text-lg max-w-2xl mx-auto"
-          >
+          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-2xl mx-auto">
             Six pillars of a community-first Web3 creator and event network.
           </motion.p>
         </motion.div>
 
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
-        >
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {cards.map((card, i) => (
             <motion.div
               key={card.title}
               variants={fadeUp}
               custom={i * 0.06}
               whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              className={`glass-card p-6 group cursor-default transition-all duration-300 hover:border-opacity-50`}
+              className="glass-card p-6 group cursor-default transition-all duration-300"
             >
-              <div
-                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} border ${card.border} flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform duration-300`}
-              >
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} border ${card.border} flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform duration-300`}>
                 {card.icon}
               </div>
               <h3 className="font-bold text-white text-lg mb-2">{card.title}</h3>
@@ -583,7 +561,6 @@ function ForCreatorsSection() {
         <div className="section-divider mb-24" />
 
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Visual */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -605,7 +582,6 @@ function ForCreatorsSection() {
                     <span className="text-green-400 text-xs font-medium bg-green-400/10 px-2 py-1 rounded-full">Active</span>
                   </div>
                 </div>
-
                 <div className="space-y-3">
                   {["Connect with global events", "Discover ecosystem builders", "Join transparent network", "Build real community presence"].map((item, i) => (
                     <motion.div
@@ -622,8 +598,6 @@ function ForCreatorsSection() {
                 </div>
               </div>
             </div>
-
-            {/* Floating badge */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
@@ -633,42 +607,19 @@ function ForCreatorsSection() {
             </motion.div>
           </motion.div>
 
-          {/* Text */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="order-1 lg:order-2"
-          >
-            <motion.div variants={fadeUp} custom={0}>
-              <SectionBadge text="For Creators & KOLs" />
-            </motion.div>
-            <motion.h2
-              variants={fadeUp}
-              custom={0.1}
-              className="text-4xl lg:text-5xl font-black tracking-tight mb-6"
-            >
-              For{" "}
-              <span className="gradient-text-green">Creators</span>
-              <br />
-              and KOLs
+          <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="order-1 lg:order-2">
+            <motion.div variants={fadeUp} custom={0}><SectionBadge text="For Creators & KOLs" /></motion.div>
+            <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-6">
+              For{" "}<span className="gradient-text-green">Creators</span><br />and KOLs
             </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              custom={0.2}
-              className="text-white/60 text-lg leading-relaxed mb-8"
-            >
+            <motion.p variants={fadeUp} custom={0.2} className="text-white/60 text-lg leading-relaxed mb-8">
               Join a transparent Web3 creator network designed for real voices,
               real communities and long-term ecosystem participation. Crypto KOL Hub
               aims to help creators stay connected with relevant Web3 events,
               communities and global ecosystem opportunities.
             </motion.p>
             <motion.div variants={fadeUp} custom={0.3}>
-              <a href="#join">
-                <button className="btn-primary px-8 py-4">
-                  Join as a Creator
-                </button>
-              </a>
+              <a href="#join"><button className="btn-primary px-8 py-4">Join as a Creator</button></a>
             </motion.div>
           </motion.div>
         </div>
@@ -681,49 +632,35 @@ function ForCreatorsSection() {
 function ForEventsSection() {
   const { ref, isInView } = useScrollInView();
 
+  const events = [
+    "Token 2049",
+    "ETH Global",
+    "Bitcoin Conference",
+    "Consensus",
+    "Korea Blockchain Week",
+    "Permissionless",
+  ];
+
   return (
     <Section id="events" className="bg-[#030712]">
       <div className="max-w-6xl mx-auto" ref={ref}>
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Text */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            <motion.div variants={fadeUp} custom={0}>
-              <SectionBadge text="For Events & Communities" />
-            </motion.div>
-            <motion.h2
-              variants={fadeUp}
-              custom={0.1}
-              className="text-4xl lg:text-5xl font-black tracking-tight mb-6"
-            >
-              For{" "}
-              <span className="gradient-text-purple">Web3 Events</span>
-              <br />
-              and Communities
+          <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"}>
+            <motion.div variants={fadeUp} custom={0}><SectionBadge text="For Events & Communities" /></motion.div>
+            <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-6">
+              For{" "}<span className="gradient-text-purple">Web3 Events</span><br />and Communities
             </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              custom={0.2}
-              className="text-white/60 text-lg leading-relaxed mb-8"
-            >
+            <motion.p variants={fadeUp} custom={0.2} className="text-white/60 text-lg leading-relaxed mb-8">
               Crypto KOL Hub follows global Web3 events and aims to build stronger
               connections between event ecosystems and regional creator communities.
               Our focus is on visibility, community participation and trusted local
               connections.
             </motion.p>
             <motion.div variants={fadeUp} custom={0.3}>
-              <a href="#join">
-                <button className="btn-outline px-8 py-4">
-                  Connect With the Community
-                </button>
-              </a>
+              <a href="#join"><button className="btn-outline px-8 py-4">Connect With the Community</button></a>
             </motion.div>
           </motion.div>
 
-          {/* Visual */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -736,19 +673,31 @@ function ForEventsSection() {
                 <h3 className="text-white/80 font-semibold text-sm mb-6 uppercase tracking-wider">
                   Event Ecosystem
                 </h3>
+
+                {/* IBW — featured / highlighted */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.35 }}
+                  className="mb-3 px-4 py-3 rounded-xl bg-indigo-500/[0.10] border border-indigo-500/25 text-white/90 text-sm text-center font-semibold flex items-center justify-center gap-2"
+                >
+                  🇹🇷 Istanbul Blockchain Week
+                </motion.div>
+
                 <div className="grid grid-cols-2 gap-3">
-                  {["Token 2049", "ETH Global", "Bitcoin Conference", "Consensus", "Korea Blockchain Week", "Permissionless"].map((ev, i) => (
+                  {events.map((ev, i) => (
                     <motion.div
                       key={ev}
                       initial={{ opacity: 0, y: 10 }}
                       animate={isInView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ delay: 0.4 + i * 0.08 }}
+                      transition={{ delay: 0.45 + i * 0.08 }}
                       className="px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/60 text-sm text-center"
                     >
                       {ev}
                     </motion.div>
                   ))}
                 </div>
+
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={isInView ? { opacity: 1 } : {}}
@@ -783,38 +732,19 @@ function GlobalVisionSection() {
       <div className="max-w-6xl mx-auto" ref={ref}>
         <div className="section-divider mb-24" />
 
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="text-center mb-16"
-        >
-          <motion.div variants={fadeUp} custom={0}>
-            <SectionBadge text="Global Vision" />
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={0.1}
-            className="text-4xl lg:text-5xl font-black tracking-tight mb-6"
-          >
-            From{" "}
-            <span className="gradient-text-green">Local Voices</span>
-            <br />
-            to{" "}
-            <span className="gradient-text-purple">Global Web3 Connections</span>
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
+          <motion.div variants={fadeUp} custom={0}><SectionBadge text="Global Vision" /></motion.div>
+          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-6">
+            From{" "}<span className="gradient-text-green">Local Voices</span><br />
+            to{" "}<span className="gradient-text-purple">Global Web3 Connections</span>
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={0.2}
-            className="text-white/50 text-lg max-w-2xl mx-auto"
-          >
+          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-2xl mx-auto">
             Web3 is global, but communities are local. Crypto KOL Hub is being built
             to connect regional creators, event communities and ecosystem builders
             through a transparent and community-first network.
           </motion.p>
         </motion.div>
 
-        {/* Animated world grid */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -822,10 +752,8 @@ function GlobalVisionSection() {
           className="relative glass-card p-8 overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-transparent to-cyan-900/10" />
-
-          {/* Grid dots representing world */}
           <div className="relative z-10 h-56 sm:h-72 overflow-hidden">
-            <div className="grid-world" style={{ position: "absolute", inset: 0 }}>
+            <div style={{ position: "absolute", inset: 0 }}>
               {Array.from({ length: 180 }).map((_, i) => {
                 const delay = Math.random() * 3;
                 const scale = Math.random() * 0.8 + 0.2;
@@ -836,23 +764,13 @@ function GlobalVisionSection() {
                   <motion.div
                     key={i}
                     className="absolute w-1 h-1 rounded-full"
-                    style={{
-                      left: `${(i % 18) * 5.56 + Math.random() * 2}%`,
-                      top: `${Math.floor(i / 18) * 10 + Math.random() * 4}%`,
-                      backgroundColor: color,
-                      scale,
-                    }}
-                    animate={isPrimary ? {
-                      opacity: [0.2, 0.8, 0.2],
-                      scale: [scale, scale * 2, scale],
-                    } : { opacity: [0.1, 0.4, 0.1] }}
+                    style={{ left: `${(i % 18) * 5.56 + Math.random() * 2}%`, top: `${Math.floor(i / 18) * 10 + Math.random() * 4}%`, backgroundColor: color, scale }}
+                    animate={isPrimary ? { opacity: [0.2, 0.8, 0.2], scale: [scale, scale * 2, scale] } : { opacity: [0.1, 0.4, 0.1] }}
                     transition={{ duration: 2 + delay, repeat: Infinity, delay }}
                   />
                 );
               })}
             </div>
-
-            {/* Connection lines overlay */}
             <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.3 }}>
               {[
                 { x1: "15%", y1: "30%", x2: "40%", y2: "55%", color: "#6366f1" },
@@ -861,54 +779,39 @@ function GlobalVisionSection() {
                 { x1: "15%", y1: "30%", x2: "70%", y2: "35%", color: "#a855f7" },
                 { x1: "40%", y1: "55%", x2: "85%", y2: "65%", color: "#6366f1" },
               ].map((line, i) => (
-                <motion.line
-                  key={i}
-                  x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
-                  stroke={line.color}
-                  strokeWidth="1"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={isInView ? { pathLength: 1, opacity: 0.6 } : {}}
-                  transition={{ duration: 1.5, delay: 0.5 + i * 0.2 }}
-                />
+                <motion.line key={i} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} stroke={line.color} strokeWidth="1"
+                  initial={{ pathLength: 0, opacity: 0 }} animate={isInView ? { pathLength: 1, opacity: 0.6 } : {}} transition={{ duration: 1.5, delay: 0.5 + i * 0.2 }} />
               ))}
-              {/* Glowing dots at intersections */}
               {[
                 { cx: "15%", cy: "30%", color: "#6366f1" },
                 { cx: "40%", cy: "55%", color: "#00ff88" },
                 { cx: "70%", cy: "35%", color: "#0ea5e9" },
                 { cx: "85%", cy: "65%", color: "#a855f7" },
               ].map((dot, i) => (
-                <motion.circle
-                  key={i}
-                  cx={dot.cx} cy={dot.cy} r="4"
-                  fill={dot.color}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={isInView ? { scale: 1, opacity: 1 } : {}}
-                  transition={{ duration: 0.5, delay: 1 + i * 0.15 }}
-                  filter="url(#glow)"
-                />
+                <motion.circle key={i} cx={dot.cx} cy={dot.cy} r="4" fill={dot.color}
+                  initial={{ scale: 0, opacity: 0 }} animate={isInView ? { scale: 1, opacity: 1 } : {}} transition={{ duration: 0.5, delay: 1 + i * 0.15 }} filter="url(#glow)" />
               ))}
               <defs>
                 <filter id="glow">
                   <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
+                  <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
                 </filter>
               </defs>
             </svg>
           </div>
 
-          {/* Region labels */}
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            {["East Asia", "Southeast Asia", "Europe", "Middle East", "Latin America", "North America"].map((region, i) => (
+            {["🇹🇷 Türkiye", "East Asia", "Southeast Asia", "Europe", "Middle East", "Latin America", "North America"].map((region, i) => (
               <motion.span
                 key={region}
                 initial={{ opacity: 0, y: 10 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 1.2 + i * 0.08 }}
-                className="px-3 py-1.5 rounded-full text-xs font-medium text-white/60 bg-white/[0.04] border border-white/[0.08]"
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
+                  region.startsWith("🇹🇷")
+                    ? "text-white/80 bg-indigo-500/10 border-indigo-500/25"
+                    : "text-white/60 bg-white/[0.04] border-white/[0.08]"
+                }`}
               >
                 {region}
               </motion.span>
@@ -924,55 +827,26 @@ function GlobalVisionSection() {
 function TransparencySection() {
   const { ref, isInView } = useScrollInView();
 
-  const negatives = [
-    "No fake engagement", "No fake creator lists", "No scam culture",
-    "No investment advice", "No token sales", "No trading services",
-    "No custody services", "No financial promises",
-  ];
-
-  const positives = [
-    "Real creators", "Real communities", "Real Web3 participation",
-    "Transparent processes", "Community-first decisions", "Open network",
-  ];
+  const negatives = ["No fake engagement", "No fake creator lists", "No scam culture", "No investment advice", "No token sales", "No trading services", "No custody services", "No financial promises"];
+  const positives = ["Real creators", "Real communities", "Real Web3 participation", "Transparent processes", "Community-first decisions", "Open network"];
 
   return (
     <Section id="transparency" className="bg-[#050c1a]">
       <div className="max-w-6xl mx-auto" ref={ref}>
         <div className="section-divider mb-24" />
 
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="text-center mb-16"
-        >
-          <motion.div variants={fadeUp} custom={0}>
-            <SectionBadge text="Our Commitment" />
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={0.1}
-            className="text-4xl lg:text-5xl font-black tracking-tight mb-4"
-          >
-            Built on{" "}
-            <span className="gradient-text-green">Transparency</span>
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
+          <motion.div variants={fadeUp} custom={0}><SectionBadge text="Our Commitment" /></motion.div>
+          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+            Built on{" "}<span className="gradient-text-green">Transparency</span>
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={0.2}
-            className="text-white/50 text-lg max-w-xl mx-auto"
-          >
+          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-xl mx-auto">
             We believe in being completely clear about what we are — and what we are not.
           </motion.p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* What we are NOT */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
-          >
+          <motion.div initial={{ opacity: 0, x: -30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.7, delay: 0.2 }}>
             <div className="glass-card p-6 border-red-500/10 h-full">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center">
@@ -982,13 +856,8 @@ function TransparencySection() {
               </div>
               <div className="grid grid-cols-1 gap-2">
                 {negatives.map((item, i) => (
-                  <motion.div
-                    key={item}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.3 + i * 0.06 }}
-                    className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-white/[0.02] transition-colors"
-                  >
+                  <motion.div key={item} initial={{ opacity: 0, x: -10 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.3 + i * 0.06 }}
+                    className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-white/[0.02] transition-colors">
                     <span className="text-red-400/60 text-sm flex-shrink-0">—</span>
                     <span className="text-white/50 text-sm">{item}</span>
                   </motion.div>
@@ -997,12 +866,7 @@ function TransparencySection() {
             </div>
           </motion.div>
 
-          {/* What we ARE */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.3 }}
-          >
+          <motion.div initial={{ opacity: 0, x: 30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.7, delay: 0.3 }}>
             <div className="glass-card p-6 border-green-500/10 h-full">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center">
@@ -1012,25 +876,15 @@ function TransparencySection() {
               </div>
               <div className="grid grid-cols-1 gap-2">
                 {positives.map((item, i) => (
-                  <motion.div
-                    key={item}
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.4 + i * 0.08 }}
-                    className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-white/[0.02] transition-colors"
-                  >
+                  <motion.div key={item} initial={{ opacity: 0, x: 10 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.4 + i * 0.08 }}
+                    className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-white/[0.02] transition-colors">
                     <span className="text-green-400 text-sm flex-shrink-0">✓</span>
                     <span className="text-white/80 text-sm font-medium">{item}</span>
                   </motion.div>
                 ))}
               </div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 1 }}
-                className="mt-6 p-4 rounded-xl bg-green-500/5 border border-green-500/15"
-              >
+              <motion.div initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1 }}
+                className="mt-6 p-4 rounded-xl bg-green-500/5 border border-green-500/15">
                 <p className="text-green-400/80 text-sm leading-relaxed">
                   <span className="font-semibold">Our Promise: </span>
                   Every action we take is community-first, transparent and honest.
@@ -1044,13 +898,139 @@ function TransparencySection() {
   );
 }
 
+// ─── Founders Section ─────────────────────────────────────────────────────────
+function FoundersSection() {
+  const { ref, isInView } = useScrollInView();
+
+  const founders = [
+    {
+      handle: "TheCryptoOnur",
+      displayName: "TheCryptoOnur",
+      role: "Co-Founder",
+      bio: "Web3 community builder & crypto content creator. Building transparent networks from Türkiye to the globe.",
+      xUrl: "https://x.com/TheCryptoOnur",
+      gradient: "from-cyan-500/20 to-indigo-500/20",
+      dot: "bg-cyan-400",
+    },
+    {
+      handle: "DoodleScr",
+      displayName: "DoodleScr",
+      role: "Co-Founder",
+      bio: "Web3 enthusiast & ecosystem contributor. Co-building the future of KOL & creator communities.",
+      xUrl: "https://x.com/DoodleScr",
+      gradient: "from-indigo-500/20 to-purple-500/20",
+      dot: "bg-indigo-400",
+    },
+  ];
+
+  return (
+    <Section id="team" className="bg-[#030712]">
+      <div className="max-w-4xl mx-auto" ref={ref}>
+        <div className="section-divider mb-24" />
+
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
+          <motion.div variants={fadeUp} custom={0}><SectionBadge text="The Founders" /></motion.div>
+          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+            Built by{" "}<span className="gradient-text-green">Real People</span>
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-xl mx-auto">
+            Crypto KOL Hub is founded and led by active Web3 community members
+            who are building transparently from day one.
+          </motion.p>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          {founders.map((founder, i) => (
+            <motion.div
+              key={founder.handle}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 + i * 0.15 }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="glass-card overflow-hidden group hover:border-indigo-500/30 transition-all duration-300"
+            >
+              {/* Card banner */}
+              <div className={`h-24 bg-gradient-to-br ${founder.gradient} relative overflow-hidden`}>
+                <div className="absolute inset-0 opacity-20">
+                  {Array.from({ length: 8 }).map((_, k) => (
+                    <div
+                      key={k}
+                      className="absolute rounded-full border border-white/20"
+                      style={{ width: 40 + k * 20, height: 40 + k * 20, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }}
+                    />
+                  ))}
+                </div>
+                {/* X watermark */}
+                <div className="absolute top-3 right-4 text-white/10 group-hover:text-white/20 transition-colors">
+                  <XIcon size={32} />
+                </div>
+                {/* Türkiye tag */}
+                <div className="absolute bottom-3 left-4 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/30 backdrop-blur-sm border border-white/10">
+                  <span className="text-xs">🇹🇷</span>
+                  <span className="text-white/60 text-[10px] font-medium">Türkiye</span>
+                </div>
+              </div>
+
+              {/* Profile photo (overlaps banner) */}
+              <div className="px-6 -mt-8 mb-4 flex items-end justify-between">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden ring-[3px] ring-[#0a0f1e] group-hover:ring-indigo-500/30 transition-all duration-300 shadow-xl">
+                    <img
+                      src={`https://unavatar.io/twitter/${founder.handle}`}
+                      alt={founder.displayName}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(founder.displayName)}&background=6366f1&color=fff&size=64`;
+                      }}
+                    />
+                  </div>
+                  {/* Online dot */}
+                  <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full ${founder.dot} ring-2 ring-[#0a0f1e]`} />
+                </div>
+
+                {/* Follow button */}
+                <a
+                  href={founder.xUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-black text-xs font-bold hover:bg-white/90 transition-all duration-200 shadow-lg"
+                >
+                  <XIcon size={11} />
+                  Follow
+                </a>
+              </div>
+
+              {/* Card body */}
+              <div className="px-6 pb-6">
+                <h3 className="font-bold text-white text-base mb-0.5 group-hover:text-indigo-300 transition-colors">
+                  {founder.displayName}
+                </h3>
+                <p className="text-indigo-400/70 text-xs font-mono mb-2">@{founder.handle}</p>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.08] mb-3">
+                  <span className="text-white/60 text-[11px] font-semibold uppercase tracking-wide">{founder.role}</span>
+                </div>
+                <p className="text-white/40 text-sm leading-relaxed">{founder.bio}</p>
+
+                {/* Stats row */}
+                <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center gap-1 text-white/30 text-xs">
+                  <span>Crypto KOL Hub</span>
+                  <span className="mx-1">·</span>
+                  <span className="gradient-text-green font-medium">Co-Founder</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
 // ─── Join Section ─────────────────────────────────────────────────────────────
 function JoinSection() {
   const { ref, isInView } = useScrollInView();
-  const [form, setForm] = useState({
-    name: "", email: "", telegram: "", twitter: "",
-    country: "", role: "", message: "",
-  });
+  const [form, setForm] = useState({ name: "", email: "", telegram: "", twitter: "", country: "", role: "", message: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -1062,20 +1042,10 @@ function JoinSection() {
     if (!form.name || !form.email || !form.role) return;
     setStatus("loading");
     try {
-      const res = await fetch("/api/join", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        setStatus("success");
-        setForm({ name: "", email: "", telegram: "", twitter: "", country: "", role: "", message: "" });
-      } else {
-        setStatus("error");
-      }
-    } catch {
-      setStatus("error");
-    }
+      const res = await fetch("/api/join", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      if (res.ok) { setStatus("success"); setForm({ name: "", email: "", telegram: "", twitter: "", country: "", role: "", message: "" }); }
+      else setStatus("error");
+    } catch { setStatus("error"); }
   };
 
   return (
@@ -1083,128 +1053,53 @@ function JoinSection() {
       <div className="max-w-3xl mx-auto" ref={ref}>
         <div className="section-divider mb-24" />
 
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="text-center mb-12"
-        >
-          <motion.div variants={fadeUp} custom={0}>
-            <SectionBadge text="Join the Network" />
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={0.1}
-            className="text-4xl lg:text-5xl font-black tracking-tight mb-4"
-          >
-            Join the{" "}
-            <span className="gradient-text-green">Crypto KOL Hub</span>
-            <br />
-            Network
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-12">
+          <motion.div variants={fadeUp} custom={0}><SectionBadge text="Join the Network" /></motion.div>
+          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+            Join the{" "}<span className="gradient-text-green">Crypto KOL Hub</span><br />Network
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={0.2}
-            className="text-white/50 text-lg max-w-xl mx-auto"
-          >
+          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-xl mx-auto">
             Whether you are a creator, KOL, event organizer, community builder or
             Web3 ecosystem contributor — join the early network and become part of
             a transparent Web3 community initiative.
           </motion.p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, delay: 0.3 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, delay: 0.3 }}>
           {status === "success" ? (
             <div className="glass-card p-12 text-center border-green-500/20">
               <div className="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl">✓</span>
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">Application Submitted!</h3>
-              <p className="text-white/50 text-lg">
-                Thank you for joining the Crypto KOL Hub network. We will be in touch soon.
-              </p>
+              <p className="text-white/50 text-lg">Thank you for joining the Crypto KOL Hub network. We will be in touch soon.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="glass-card p-8">
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">
-                    Name *
-                  </label>
-                  <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    required
-                    placeholder="Your name"
-                    className="form-input"
-                  />
+                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Name *</label>
+                  <input name="name" value={form.name} onChange={handleChange} required placeholder="Your name" className="form-input" />
                 </div>
                 <div>
-                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">
-                    Email *
-                  </label>
-                  <input
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="your@email.com"
-                    className="form-input"
-                  />
+                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Email *</label>
+                  <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="your@email.com" className="form-input" />
                 </div>
                 <div>
-                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">
-                    Telegram
-                  </label>
-                  <input
-                    name="telegram"
-                    value={form.telegram}
-                    onChange={handleChange}
-                    placeholder="@username"
-                    className="form-input"
-                  />
+                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Telegram</label>
+                  <input name="telegram" value={form.telegram} onChange={handleChange} placeholder="@username" className="form-input" />
                 </div>
                 <div>
-                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">
-                    X / Twitter
-                  </label>
-                  <input
-                    name="twitter"
-                    value={form.twitter}
-                    onChange={handleChange}
-                    placeholder="@handle"
-                    className="form-input"
-                  />
+                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">X / Twitter</label>
+                  <input name="twitter" value={form.twitter} onChange={handleChange} placeholder="@handle" className="form-input" />
                 </div>
                 <div>
-                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">
-                    Country
-                  </label>
-                  <input
-                    name="country"
-                    value={form.country}
-                    onChange={handleChange}
-                    placeholder="Your country"
-                    className="form-input"
-                  />
+                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Country</label>
+                  <input name="country" value={form.country} onChange={handleChange} placeholder="Your country" className="form-input" />
                 </div>
                 <div>
-                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">
-                    Role *
-                  </label>
-                  <select
-                    name="role"
-                    value={form.role}
-                    onChange={handleChange}
-                    required
-                    className="form-input"
-                  >
+                  <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Role *</label>
+                  <select name="role" value={form.role} onChange={handleChange} required className="form-input">
                     <option value="" disabled>Select your role</option>
                     <option value="Creator / KOL">Creator / KOL</option>
                     <option value="Event Organizer">Event Organizer</option>
@@ -1218,42 +1113,21 @@ function JoinSection() {
               </div>
 
               <div className="mt-5">
-                <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  value={form.message}
-                  onChange={handleChange}
-                  rows={4}
-                  placeholder="Tell us about yourself and why you want to join the network..."
-                  className="form-input resize-none"
-                />
+                <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Message</label>
+                <textarea name="message" value={form.message} onChange={handleChange} rows={4}
+                  placeholder="Tell us about yourself and why you want to join the network..." className="form-input resize-none" />
               </div>
 
-              {status === "error" && (
-                <p className="mt-3 text-red-400 text-sm">
-                  Something went wrong. Please try again.
-                </p>
-              )}
+              {status === "error" && <p className="mt-3 text-red-400 text-sm">Something went wrong. Please try again.</p>}
 
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="btn-primary w-full mt-6 text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button type="submit" disabled={status === "loading"} className="btn-primary w-full mt-6 text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed">
                 {status === "loading" ? (
                   <span className="flex items-center justify-center gap-2">
-                    <motion.span
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                    />
+                    <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
                     Submitting...
                   </span>
-                ) : (
-                  "Submit Application"
-                )}
+                ) : "Submit Application"}
               </button>
             </form>
           )}
@@ -1265,56 +1139,93 @@ function JoinSection() {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
-  const links = [
+  const navLinks = [
     { label: "About", href: "#about" },
     { label: "Community", href: "#building" },
     { label: "Events", href: "#events" },
     { label: "Creators", href: "#creators" },
-    { label: "Transparency", href: "#transparency" },
-    { label: "Contact", href: "mailto:hello@cryptokolhub.com" },
+    { label: "Team", href: "#team" },
+    { label: "Join", href: "#join" },
   ];
 
   return (
     <footer className="relative bg-[#030712] border-t border-white/[0.06]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         {/* Top */}
-        <div className="grid md:grid-cols-2 gap-10 mb-12">
+        <div className="grid md:grid-cols-3 gap-10 mb-12">
+          {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center">
-                <span className="text-white font-black text-sm">K</span>
-              </div>
+              <img src="/logo.png" alt="Crypto KOL Hub" className="w-9 h-9 object-contain" style={{ mixBlendMode: "screen" }} />
               <span className="font-bold text-white text-lg">
                 Crypto <span className="gradient-text-green">KOL Hub</span>
               </span>
             </div>
-            <p className="text-white/40 text-sm leading-relaxed max-w-sm">
+            <p className="text-white/40 text-sm leading-relaxed max-w-sm mb-4">
               Crypto KOL Hub is an independent Web3 community and creator network
               initiative connecting real creators, events and communities globally.
             </p>
+            <span className="inline-flex items-center gap-1.5 text-white/30 text-xs">
+              🇹🇷 Rooted in Türkiye. Connected to Global Web3.
+            </span>
           </div>
 
+          {/* Navigation */}
           <div>
-            <h4 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">
-              Navigation
-            </h4>
+            <h4 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">Navigation</h4>
             <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-              {links.map(l => (
-                <a
-                  key={l.label}
-                  href={l.href}
-                  className="text-white/40 hover:text-white text-sm transition-colors duration-200"
-                >
+              {navLinks.map(l => (
+                <a key={l.label} href={l.href} className="text-white/40 hover:text-white text-sm transition-colors duration-200">
                   {l.label}
                 </a>
               ))}
             </div>
             <div className="mt-4">
-              <a
-                href="mailto:hello@cryptokolhub.com"
-                className="text-indigo-400 hover:text-indigo-300 text-sm transition-colors"
-              >
+              <a href="mailto:hello@cryptokolhub.com" className="text-indigo-400 hover:text-indigo-300 text-sm transition-colors">
                 hello@cryptokolhub.com
+              </a>
+            </div>
+          </div>
+
+          {/* Social */}
+          <div>
+            <h4 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-4">Follow Us</h4>
+            <div className="flex flex-col gap-3">
+              <a
+                href="https://x.com/cryptokolhub"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/50 hover:text-white hover:border-white/20 hover:bg-white/[0.07] transition-all duration-200 text-sm group"
+              >
+                <XIcon size={15} />
+                <span>@cryptokolhub</span>
+              </a>
+              <a
+                href="https://t.me/cryptokolhubtr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/50 hover:text-white hover:border-white/20 hover:bg-white/[0.07] transition-all duration-200 text-sm group"
+              >
+                <TelegramIcon size={15} />
+                <span>@cryptokolhubtr</span>
+              </a>
+              <a
+                href="https://x.com/TheCryptoOnur"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/50 hover:text-white hover:border-white/20 hover:bg-white/[0.07] transition-all duration-200 text-sm group"
+              >
+                <XIcon size={15} />
+                <span>@TheCryptoOnur</span>
+              </a>
+              <a
+                href="https://x.com/DoodleScr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/50 hover:text-white hover:border-white/20 hover:bg-white/[0.07] transition-all duration-200 text-sm group"
+              >
+                <XIcon size={15} />
+                <span>@DoodleScr</span>
               </a>
             </div>
           </div>
@@ -1363,6 +1274,7 @@ export default function HomePage() {
         <ForEventsSection />
         <GlobalVisionSection />
         <TransparencySection />
+        <FoundersSection />
         <JoinSection />
       </main>
       <Footer />

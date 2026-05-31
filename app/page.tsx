@@ -227,7 +227,7 @@ function Navbar() {
             <XIcon size={15} />
           </a>
           <a
-            href="https://t.me/cryptokolhubtr"
+            href="https://t.me/cryptokolhuboffical"
             target="_blank"
             rel="noopener noreferrer"
             title="Join Telegram"
@@ -282,12 +282,12 @@ function Navbar() {
               </a>
               <span className="text-white/20">·</span>
               <a
-                href="https://t.me/cryptokolhubtr"
+                href="https://t.me/cryptokolhuboffical"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors"
               >
-                <TelegramIcon size={14} /> @cryptokolhubtr
+                <TelegramIcon size={14} /> @cryptokolhuboffical
               </a>
             </div>
             <a href="#join" onClick={() => setMenuOpen(false)}>
@@ -393,12 +393,12 @@ function HeroSection() {
             </a>
             <span className="text-white/15">·</span>
             <a
-              href="https://t.me/cryptokolhubtr"
+              href="https://t.me/cryptokolhuboffical"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-white/30 hover:text-white/70 text-sm transition-colors duration-200"
             >
-              <TelegramIcon size={14} /> @cryptokolhubtr
+              <TelegramIcon size={14} /> @cryptokolhuboffical
             </a>
           </motion.div>
         </div>
@@ -1201,13 +1201,13 @@ function Footer() {
                 <span>@cryptokolhub</span>
               </a>
               <a
-                href="https://t.me/cryptokolhubtr"
+                href="https://t.me/cryptokolhuboffical"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/50 hover:text-white hover:border-white/20 hover:bg-white/[0.07] transition-all duration-200 text-sm group"
               >
                 <TelegramIcon size={15} />
-                <span>@cryptokolhubtr</span>
+                <span>@cryptokolhuboffical</span>
               </a>
             </div>
           </div>

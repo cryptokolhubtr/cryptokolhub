@@ -149,6 +149,18 @@ body {
 
 .form-input::placeholder { color: rgba(255,255,255,0.3); }
 
+/* Select dropdown options — dark background */
+.form-input option {
+  background-color: #0f172a;
+  color: #fff;
+}
+
+.form-input option:hover,
+.form-input option:checked {
+  background-color: #1e1b4b;
+  color: #fff;
+}
+
 /* Section divider */
 .section-divider {
   height: 1px;

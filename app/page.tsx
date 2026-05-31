@@ -1209,24 +1209,6 @@ function Footer() {
                 <TelegramIcon size={15} />
                 <span>@cryptokolhubtr</span>
               </a>
-              <a
-                href="https://x.com/TheCryptoOnur"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/50 hover:text-white hover:border-white/20 hover:bg-white/[0.07] transition-all duration-200 text-sm group"
-              >
-                <XIcon size={15} />
-                <span>@TheCryptoOnur</span>
-              </a>
-              <a
-                href="https://x.com/DoodleScr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/50 hover:text-white hover:border-white/20 hover:bg-white/[0.07] transition-all duration-200 text-sm group"
-              >
-                <XIcon size={15} />
-                <span>@DoodleScr</span>
-              </a>
             </div>
           </div>
         </div>

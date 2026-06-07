@@ -825,57 +825,44 @@ function GlobalVisionSection() {
 
 // ─── Partners Section ─────────────────────────────────────────────────────────
 function PartnersSection() {
-  const { ref, isInView } = useScrollInView();
   const [partners, setPartners] = useState<{ id: string; name: string; logoUrl: string; website: string; description?: string }[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch("/api/partners")
       .then(r => r.json())
-      .then(d => setPartners(d.partners ?? []))
-      .catch(() => {});
+      .then(d => { setPartners(d.partners ?? []); setLoaded(true); })
+      .catch(() => setLoaded(true));
   }, []);
+
+  if (!loaded) return null;
 
   return (
     <Section id="partners" className="bg-gradient-to-b from-[#050c1a] to-[#030712]">
-      <div className="max-w-6xl mx-auto" ref={ref}>
+      <div className="max-w-6xl mx-auto">
         <div className="section-divider mb-24" />
 
-        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
-          <motion.div variants={fadeUp} custom={0}><SectionBadge text="Partners" /></motion.div>
-          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+        <div className="text-center mb-16">
+          <SectionBadge text="Partners" />
+          <h2 className="text-4xl lg:text-5xl font-black tracking-tight mb-4 mt-6">
             Our <span className="gradient-text-green">Partners</span>
-          </motion.h2>
-          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-2xl mx-auto">
+          </h2>
+          <p className="text-white/50 text-lg max-w-2xl mx-auto">
             Trusted organizations and projects building the Web3 ecosystem alongside us.
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         {partners.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center py-16 text-white/20 text-sm"
-          >
-            Partners coming soon...
-          </motion.div>
+          <div className="text-center py-16 text-white/20 text-sm">Partners coming soon...</div>
         ) : (
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5"
-          >
-            {partners.map((p, i) => (
-              <motion.a
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {partners.map(p => (
+              <a
                 key={p.id}
                 href={p.website || "#"}
                 target={p.website ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                variants={fadeUp}
-                custom={i * 0.07}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="glass-card p-5 flex flex-col items-center text-center group hover:border-indigo-500/30 transition-all duration-300 cursor-pointer"
+                className="glass-card p-5 flex flex-col items-center text-center group hover:border-indigo-500/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
               >
                 <div className="w-16 h-16 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mb-3 overflow-hidden group-hover:border-indigo-500/30 transition-all">
                   {p.logoUrl ? (
@@ -886,9 +873,9 @@ function PartnersSection() {
                 </div>
                 <h3 className="font-semibold text-white text-sm group-hover:text-indigo-300 transition-colors">{p.name}</h3>
                 {p.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{p.description}</p>}
-              </motion.a>
+              </a>
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
     </Section>
@@ -897,90 +884,66 @@ function PartnersSection() {
 
 // ─── Events Section ────────────────────────────────────────────────────────────
 function EventsShowcaseSection() {
-  const { ref, isInView } = useScrollInView();
   const [events, setEvents] = useState<{ id: string; name: string; date: string; location: string; description: string; imageUrl: string; link?: string }[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch("/api/events")
       .then(r => r.json())
-      .then(d => setEvents(d.events ?? []))
-      .catch(() => {});
+      .then(d => { setEvents(d.events ?? []); setLoaded(true); })
+      .catch(() => setLoaded(true));
   }, []);
+
+  if (!loaded) return null;
 
   return (
     <Section id="our-events" className="bg-[#030712]">
-      <div className="max-w-6xl mx-auto" ref={ref}>
+      <div className="max-w-6xl mx-auto">
         <div className="section-divider mb-24" />
 
-        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
-          <motion.div variants={fadeUp} custom={0}><SectionBadge text="Events" /></motion.div>
-          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+        <div className="text-center mb-16">
+          <SectionBadge text="Events" />
+          <h2 className="text-4xl lg:text-5xl font-black tracking-tight mb-4 mt-6">
             Our <span className="gradient-text-purple">Events</span>
-          </motion.h2>
-          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-2xl mx-auto">
+          </h2>
+          <p className="text-white/50 text-lg max-w-2xl mx-auto">
             Events we organize, attend and support across the global Web3 ecosystem.
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         {events.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center py-16 text-white/20 text-sm"
-          >
-            Events coming soon...
-          </motion.div>
+          <div className="text-center py-16 text-white/20 text-sm">Events coming soon...</div>
         ) : (
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {events.map((ev, i) => (
-            <motion.div
-              key={ev.id}
-              variants={fadeUp}
-              custom={i * 0.07}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              className="glass-card overflow-hidden group hover:border-purple-500/30 transition-all duration-300"
-            >
-              {/* Photo */}
-              <div className="h-48 bg-gradient-to-br from-indigo-900/40 to-purple-900/30 relative overflow-hidden">
-                {ev.imageUrl ? (
-                  <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <span className="text-5xl">📅</span>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                {ev.date && (
-                  <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-indigo-600/90 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
-                    {new Date(ev.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                  </div>
-                )}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events.map(ev => (
+              <div key={ev.id} className="glass-card overflow-hidden group hover:border-purple-500/30 hover:-translate-y-1 transition-all duration-300">
+                <div className="h-48 bg-gradient-to-br from-indigo-900/40 to-purple-900/30 relative overflow-hidden">
+                  {ev.imageUrl ? (
+                    <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full"><span className="text-5xl">📅</span></div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  {ev.date && (
+                    <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-indigo-600/90 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
+                      {new Date(ev.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    </div>
+                  )}
+                </div>
+                <div className="p-5">
+                  <h3 className="font-bold text-white text-base mb-1.5 group-hover:text-purple-300 transition-colors">{ev.name}</h3>
+                  {ev.location && <p className="text-white/40 text-xs mb-2">📍 {ev.location}</p>}
+                  {ev.description && <p className="text-white/50 text-sm leading-relaxed line-clamp-3">{ev.description}</p>}
+                  {ev.link && (
+                    <a href={ev.link} target="_blank" rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1.5 text-purple-400 hover:text-purple-300 text-xs font-medium transition-colors">
+                      Learn more →
+                    </a>
+                  )}
+                </div>
               </div>
-
-              <div className="p-5">
-                <h3 className="font-bold text-white text-base mb-1.5 group-hover:text-purple-300 transition-colors">{ev.name}</h3>
-                {ev.location && (
-                  <p className="text-white/40 text-xs mb-2 flex items-center gap-1">
-                    <span>📍</span> {ev.location}
-                  </p>
-                )}
-                {ev.description && <p className="text-white/50 text-sm leading-relaxed line-clamp-3">{ev.description}</p>}
-                {ev.link && (
-                  <a href={ev.link} target="_blank" rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-1.5 text-purple-400 hover:text-purple-300 text-xs font-medium transition-colors">
-                    Learn more →
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </div>
         )}
       </div>
     </Section>

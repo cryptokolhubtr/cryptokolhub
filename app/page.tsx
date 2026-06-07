@@ -178,8 +178,8 @@ function Navbar() {
     { label: "Home", href: "#home" },
     { label: "About", href: "#about" },
     { label: "Community", href: "#building" },
-    { label: "Events", href: "#events" },
-    { label: "Creators", href: "#creators" },
+    { label: "Partners", href: "#partners" },
+    { label: "Events", href: "#our-events" },
     { label: "Team", href: "#team" },
     { label: "Join", href: "#join" },
   ];
@@ -835,8 +835,6 @@ function PartnersSection() {
       .catch(() => {});
   }, []);
 
-  if (partners.length === 0) return null;
-
   return (
     <Section id="partners" className="bg-gradient-to-b from-[#050c1a] to-[#030712]">
       <div className="max-w-6xl mx-auto" ref={ref}>
@@ -852,35 +850,46 @@ function PartnersSection() {
           </motion.p>
         </motion.div>
 
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5"
-        >
-          {partners.map((p, i) => (
-            <motion.a
-              key={p.id}
-              href={p.website || "#"}
-              target={p.website ? "_blank" : undefined}
-              rel="noopener noreferrer"
-              variants={fadeUp}
-              custom={i * 0.07}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="glass-card p-5 flex flex-col items-center text-center group hover:border-indigo-500/30 transition-all duration-300 cursor-pointer"
-            >
-              <div className="w-16 h-16 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mb-3 overflow-hidden group-hover:border-indigo-500/30 transition-all">
-                {p.logoUrl ? (
-                  <img src={p.logoUrl} alt={p.name} className="w-full h-full object-contain p-2" />
-                ) : (
-                  <span className="text-2xl font-black text-indigo-400">{p.name[0]}</span>
-                )}
-              </div>
-              <h3 className="font-semibold text-white text-sm group-hover:text-indigo-300 transition-colors">{p.name}</h3>
-              {p.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{p.description}</p>}
-            </motion.a>
-          ))}
-        </motion.div>
+        {partners.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-center py-16 text-white/20 text-sm"
+          >
+            Partners coming soon...
+          </motion.div>
+        ) : (
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5"
+          >
+            {partners.map((p, i) => (
+              <motion.a
+                key={p.id}
+                href={p.website || "#"}
+                target={p.website ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                variants={fadeUp}
+                custom={i * 0.07}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="glass-card p-5 flex flex-col items-center text-center group hover:border-indigo-500/30 transition-all duration-300 cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mb-3 overflow-hidden group-hover:border-indigo-500/30 transition-all">
+                  {p.logoUrl ? (
+                    <img src={p.logoUrl} alt={p.name} className="w-full h-full object-contain p-2" />
+                  ) : (
+                    <span className="text-2xl font-black text-indigo-400">{p.name[0]}</span>
+                  )}
+                </div>
+                <h3 className="font-semibold text-white text-sm group-hover:text-indigo-300 transition-colors">{p.name}</h3>
+                {p.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{p.description}</p>}
+              </motion.a>
+            ))}
+          </motion.div>
+        )}
       </div>
     </Section>
   );
@@ -898,8 +907,6 @@ function EventsShowcaseSection() {
       .catch(() => {});
   }, []);
 
-  if (events.length === 0) return null;
-
   return (
     <Section id="our-events" className="bg-[#030712]">
       <div className="max-w-6xl mx-auto" ref={ref}>
@@ -915,6 +922,16 @@ function EventsShowcaseSection() {
           </motion.p>
         </motion.div>
 
+        {events.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-center py-16 text-white/20 text-sm"
+          >
+            Events coming soon...
+          </motion.div>
+        ) : (
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -964,6 +981,7 @@ function EventsShowcaseSection() {
             </motion.div>
           ))}
         </motion.div>
+        )}
       </div>
     </Section>
   );

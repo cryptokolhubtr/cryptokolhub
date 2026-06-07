@@ -16,14 +16,17 @@ const transporter = nodemailer.createTransport({
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, telegram, twitter, country, role, message } = body;
+    const { name, email, telegram, twitter, country, role, message, type } = body;
 
     if (!name || !email || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const applicantType = type === "company" ? "company" : "individual";
+
     const entry = {
       id: Date.now().toString(),
+      type: applicantType,
       name, email,
       telegram: telegram || "",
       twitter: twitter || "",
@@ -46,15 +49,18 @@ export async function POST(req: NextRequest) {
 
     // Send email notification
     if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+      const typeLabel = applicantType === "company" ? "🏢 Firma / Company" : "👤 Şahıs / Individual";
       await transporter.sendMail({
         from: `"Crypto KOL Hub" <${process.env.GMAIL_USER}>`,
         to: process.env.GMAIL_USER,
-        subject: `🌐 New Application: ${name} — ${role}`,
+        subject: `🌐 New Application: ${name} — ${role} (${applicantType === "company" ? "Firma" : "Şahıs"})`,
         html: `
           <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;color:#fff;padding:32px;border-radius:12px;">
-            <h2 style="color:#00ff88;margin:0 0 24px;">New Network Application</h2>
+            <h2 style="color:#00ff88;margin:0 0 8px;">New Network Application</h2>
+            <p style="color:#6366f1;margin:0 0 24px;font-size:14px;">${typeLabel}</p>
             <table style="width:100%;border-collapse:collapse;">
-              <tr><td style="padding:8px 0;color:#888;width:130px;">Name</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;width:130px;">Type</td><td style="padding:8px 0;font-weight:600;">${typeLabel}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;">Name</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
               <tr><td style="padding:8px 0;color:#888;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#6366f1;">${email}</a></td></tr>
               <tr><td style="padding:8px 0;color:#888;">Role</td><td style="padding:8px 0;">${role}</td></tr>
               <tr><td style="padding:8px 0;color:#888;">Telegram</td><td style="padding:8px 0;">${telegram || "—"}</td></tr>

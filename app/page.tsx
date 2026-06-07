@@ -823,6 +823,152 @@ function GlobalVisionSection() {
   );
 }
 
+// ─── Partners Section ─────────────────────────────────────────────────────────
+function PartnersSection() {
+  const { ref, isInView } = useScrollInView();
+  const [partners, setPartners] = useState<{ id: string; name: string; logoUrl: string; website: string; description?: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/partners")
+      .then(r => r.json())
+      .then(d => setPartners(d.partners ?? []))
+      .catch(() => {});
+  }, []);
+
+  if (partners.length === 0) return null;
+
+  return (
+    <Section id="partners" className="bg-gradient-to-b from-[#050c1a] to-[#030712]">
+      <div className="max-w-6xl mx-auto" ref={ref}>
+        <div className="section-divider mb-24" />
+
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
+          <motion.div variants={fadeUp} custom={0}><SectionBadge text="Partners" /></motion.div>
+          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+            Our <span className="gradient-text-green">Partners</span>
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-2xl mx-auto">
+            Trusted organizations and projects building the Web3 ecosystem alongside us.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5"
+        >
+          {partners.map((p, i) => (
+            <motion.a
+              key={p.id}
+              href={p.website || "#"}
+              target={p.website ? "_blank" : undefined}
+              rel="noopener noreferrer"
+              variants={fadeUp}
+              custom={i * 0.07}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="glass-card p-5 flex flex-col items-center text-center group hover:border-indigo-500/30 transition-all duration-300 cursor-pointer"
+            >
+              <div className="w-16 h-16 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mb-3 overflow-hidden group-hover:border-indigo-500/30 transition-all">
+                {p.logoUrl ? (
+                  <img src={p.logoUrl} alt={p.name} className="w-full h-full object-contain p-2" />
+                ) : (
+                  <span className="text-2xl font-black text-indigo-400">{p.name[0]}</span>
+                )}
+              </div>
+              <h3 className="font-semibold text-white text-sm group-hover:text-indigo-300 transition-colors">{p.name}</h3>
+              {p.description && <p className="text-white/40 text-xs mt-1 line-clamp-2">{p.description}</p>}
+            </motion.a>
+          ))}
+        </motion.div>
+      </div>
+    </Section>
+  );
+}
+
+// ─── Events Section ────────────────────────────────────────────────────────────
+function EventsShowcaseSection() {
+  const { ref, isInView } = useScrollInView();
+  const [events, setEvents] = useState<{ id: string; name: string; date: string; location: string; description: string; imageUrl: string; link?: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then(r => r.json())
+      .then(d => setEvents(d.events ?? []))
+      .catch(() => {});
+  }, []);
+
+  if (events.length === 0) return null;
+
+  return (
+    <Section id="our-events" className="bg-[#030712]">
+      <div className="max-w-6xl mx-auto" ref={ref}>
+        <div className="section-divider mb-24" />
+
+        <motion.div variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"} className="text-center mb-16">
+          <motion.div variants={fadeUp} custom={0}><SectionBadge text="Events" /></motion.div>
+          <motion.h2 variants={fadeUp} custom={0.1} className="text-4xl lg:text-5xl font-black tracking-tight mb-4">
+            Our <span className="gradient-text-purple">Events</span>
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={0.2} className="text-white/50 text-lg max-w-2xl mx-auto">
+            Events we organize, attend and support across the global Web3 ecosystem.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {events.map((ev, i) => (
+            <motion.div
+              key={ev.id}
+              variants={fadeUp}
+              custom={i * 0.07}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className="glass-card overflow-hidden group hover:border-purple-500/30 transition-all duration-300"
+            >
+              {/* Photo */}
+              <div className="h-48 bg-gradient-to-br from-indigo-900/40 to-purple-900/30 relative overflow-hidden">
+                {ev.imageUrl ? (
+                  <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <span className="text-5xl">📅</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                {ev.date && (
+                  <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-indigo-600/90 backdrop-blur-sm rounded-full text-white text-xs font-semibold">
+                    {new Date(ev.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-5">
+                <h3 className="font-bold text-white text-base mb-1.5 group-hover:text-purple-300 transition-colors">{ev.name}</h3>
+                {ev.location && (
+                  <p className="text-white/40 text-xs mb-2 flex items-center gap-1">
+                    <span>📍</span> {ev.location}
+                  </p>
+                )}
+                {ev.description && <p className="text-white/50 text-sm leading-relaxed line-clamp-3">{ev.description}</p>}
+                {ev.link && (
+                  <a href={ev.link} target="_blank" rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1.5 text-purple-400 hover:text-purple-300 text-xs font-medium transition-colors">
+                    Learn more →
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </Section>
+  );
+}
+
 // ─── Transparency Section ─────────────────────────────────────────────────────
 function TransparencySection() {
   const { ref, isInView } = useScrollInView();
@@ -1030,7 +1176,7 @@ function FoundersSection() {
 // ─── Join Section ─────────────────────────────────────────────────────────────
 function JoinSection() {
   const { ref, isInView } = useScrollInView();
-  const [form, setForm] = useState({ name: "", email: "", telegram: "", twitter: "", country: "", role: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", telegram: "", twitter: "", country: "", role: "", message: "", type: "individual" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -1043,7 +1189,7 @@ function JoinSection() {
     setStatus("loading");
     try {
       const res = await fetch("/api/join", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      if (res.ok) { setStatus("success"); setForm({ name: "", email: "", telegram: "", twitter: "", country: "", role: "", message: "" }); }
+      if (res.ok) { setStatus("success"); setForm({ name: "", email: "", telegram: "", twitter: "", country: "", role: "", message: "", type: "individual" }); }
       else setStatus("error");
     } catch { setStatus("error"); }
   };
@@ -1076,6 +1222,33 @@ function JoinSection() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="glass-card p-8">
+              {/* Individual / Company toggle */}
+              <div className="mb-6">
+                <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">
+                  Application Type *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { value: "individual", label: "👤 Individual", sub: "Personal / Creator / KOL" },
+                    { value: "company", label: "🏢 Company", sub: "Project / Brand / Agency" },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, type: opt.value }))}
+                      className={`p-4 rounded-xl border text-left transition-all duration-200 ${
+                        form.type === opt.value
+                          ? "bg-indigo-600/20 border-indigo-500/50 text-white"
+                          : "bg-white/[0.02] border-white/[0.08] text-white/50 hover:border-white/20"
+                      }`}
+                    >
+                      <div className="font-semibold text-sm">{opt.label}</div>
+                      <div className="text-xs mt-0.5 opacity-70">{opt.sub}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Name *</label>
@@ -1255,6 +1428,8 @@ export default function HomePage() {
         <ForCreatorsSection />
         <ForEventsSection />
         <GlobalVisionSection />
+        <PartnersSection />
+        <EventsShowcaseSection />
         <TransparencySection />
         <FoundersSection />
         <JoinSection />

@@ -855,14 +855,14 @@ function PartnersSection() {
         {partners.length === 0 ? (
           <div className="text-center py-16 text-white/20 text-sm">Partners coming soon...</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="flex flex-wrap justify-center gap-5">
             {partners.map(p => (
               <a
                 key={p.id}
                 href={p.website || "#"}
                 target={p.website ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className="glass-card p-5 flex flex-col items-center text-center group hover:border-indigo-500/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                className="glass-card p-5 flex flex-col items-center text-center group hover:border-indigo-500/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer w-44"
               >
                 <div className="w-16 h-16 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mb-3 overflow-hidden group-hover:border-indigo-500/30 transition-all">
                   {p.logoUrl ? (
